@@ -1,10 +1,10 @@
-###Algorithm & DataStructure
+### Algorithm & DataStructure
 - C程序设计
 - 数据结构（C语言版）
 - 算法
 - 数据结构与算法分析--c语言描述
 
-#####二分查找（binary_search）
+##### 二分查找（binary_search）
 `arrays`为查找数组
 `result`为查找结果
 `length`为数组长度
@@ -26,7 +26,7 @@ int binary_search(int arrays[],int result,int length){
     return mid;
 }
 ```
-#####最大子序列和（maxSubSeqSum）
+##### 最大子序列和（maxSubSeqSum）
 - 时间复杂度:T(N)=O(N3)
 ```
 int MaxSubSeqSum(int arrays[],int length){
@@ -43,7 +43,7 @@ int MaxSubSeqSum(int arrays[],int length){
     return maxSum;
 }
 ```
-#####最大子序列和改进1（maxSubSeqSum）
+##### 最大子序列和改进1（maxSubSeqSum）
 - 时间复杂度:T(N)=O(N2)
 ```
 int MaxSubSeqSum(int arrays[],int length){
@@ -58,7 +58,7 @@ int MaxSubSeqSum(int arrays[],int length){
     return maxSum;
 }
 ```
-#####最大子序列和（maxSubSeqSum）--分治法
+##### 最大子序列和（maxSubSeqSum）--分治法
 算法复杂度:T(N)=O(NlgN)
 ```
 int MaxSubSeqSum(int arrays[], int left, int right) {
@@ -88,7 +88,7 @@ int MaxSubSeqSum(int arrays[], int left, int right) {
     return sum;
 }
 ```
-#####线性表的顺序存储
+##### 线性表的顺序存储
 ```
 typedef struct LinkedList{
     int data[MAXSIZE];//存储数组
@@ -137,7 +137,7 @@ void DeleteElement(int i,List* Ptrl){
     return;
 }
 ```
-#####线性表的链式存储
+##### 线性表的链式存储
 ```
 typedef struct LinkedList {
     int data;
@@ -217,6 +217,138 @@ List *Delete(int i, List *Ptrl) {
         p->next = s->next;
         free(s);//清理无用空间
         return Ptrl;
+    }
+}
+```
+##### 广义表
+```
+/*广义表是线性表的推广
+ *对于线性表而言，n的元素都是基本单元素
+ *广义表中，这些元素不仅可以是单元素也可以是另一个广义表
+ **/
+typedef struct GNode{
+    int Tag;//标识域：0表示结点是单元素，1表示结点是广义表
+    union {//子表指针域Sublist与单元素数据域Data复用，即共用存储空间
+        int data;
+        struct GNode *SubList;
+    }URegion;
+    struct GNode *next;
+}GList;
+/*
+ * 多重链表中节点的指针与会有多个，但包含两个指针域的链表并不一定是多重链表，比如双向链表
+ * 多重链表有广泛的用途，（树，图等相对复杂的数据结构都可以用多重链表存储）
+ * */
+ 
+ /*矩阵可以使用二维数组表示，但二维数组表示优缺点（1.数组的大小需要事先确定，2.对于稀疏矩阵将造成大量的存储空间浪费）
+  *采用一种典型的多重链表-十字链表来存储稀疏矩阵
+  *只存储矩阵非0元素项（结点数据域：行坐标Row，列坐标Col，数值Value）
+  *每个结点通过两个指针域，吧同行、同列串起来；
+  * 行指针（右指针）Right
+  * 列指针（下指针）Down
+  **/
+ ```
+##### 堆栈（顺序存储）数组方式
+```
+typedef struct{
+    int Data[MAXSIZE];
+    int Top;
+}Stack;
+void Push(Stack *stack,int value){
+    if(stack->Top==MAXSIZE-1){//数组有界
+        printf("堆栈满");
+    }else{
+        stack->Data[++(stack->Top)]=value;
+        return;
+    }
+}
+int Pop(Stack *stack){
+    if(stack->Top==-1){//为空检查
+        printf("堆栈为空");
+        return ERROR;
+    } else
+    return stack->Data[stack->Top--];
+}
+```
+#####一个有界数组存储两个堆栈
+```
+#define MAXSIZE 50
+   /*一个有界数组存储两个堆栈，如果数组有空间则执行入栈操作，（一个向右增长，一个向左增长）
+    * */
+   typedef struct DStack{
+       int data[MAXSIZE];
+       int Top1;
+       int Top2;
+   }Stacks;
+   void Push(Stacks *stacks,int value,int Tag){
+       if(stacks->Top2-stacks->Top1==1){
+           printf("堆栈满");return;
+       }
+       if(Tag==1)
+           stacks->data[++stacks->Top1]=value;
+       else
+           stacks->data[--stacks->Top2]=value;
+   }
+   int Pop(Stacks *stacks,int Tag){
+       if(Tag==1){
+           if(stacks->Top1==-1){
+               printf("堆栈1空");
+               return NULL;
+           }else {
+               return stacks->data[stacks->Top1--];
+           }
+       }else{
+           if(stacks->Top2==MAXSIZE){
+               printf("堆栈2空");
+               return NULL;
+           }else{
+               return stacks->data[stacks->Top2++];
+           }
+       }
+   }
+   int main() {
+       Stacks *stacks;
+       stacks->Top1=-1;
+       stacks->Top2=MAXSIZE;//初始化两个堆栈头指针
+       return 0;
+   }
+
+```
+##### 堆栈（链式存储）
+```
+/*用单向链表表示栈时候，栈Top结点一定是链头结点
+ * */
+typedef struct Node{
+    int value;
+    struct Node *next;
+}LinkedStack;
+LinkedStack * CreateLinkedStack(){
+    LinkedStack *stack;
+    stack=(LinkedStack *)malloc(sizeof(LinkedStack));
+    stack->next=NULL;
+    return stack;
+};
+int isEmpty(LinkedStack *stack){//注意Top结点没有值，只有一个单链表的头指针
+    return (stack->next==NULL);
+}
+void Push(LinkedStack *stack,int value){
+    LinkedStack *insertElement;
+    insertElement=malloc(sizeof(LinkedStack));//分配内存空间
+    insertElement->value=value;//插入的值赋值给结点
+    insertElement->next=stack->next;//将已存在链表链接到插入的结点
+    stack->next=insertElement;//改变Top结点
+}
+int Pop(LinkedStack *stack){
+    int result;
+    LinkedStack *popElement;
+    if(isEmpty(stack)){
+        printf("链表为空");
+        return ERROR;
+    }else{
+        popElement=stack->next;
+        result=popElement->value;
+        stack->next=popElement->next;
+        free(popElement);//记得释放无用内存空间
+        return result;
     }
 }
 ```
