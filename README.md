@@ -269,7 +269,7 @@ int Pop(Stack *stack){
     return stack->Data[stack->Top--];
 }
 ```
-#####一个有界数组存储两个堆栈
+##### 一个有界数组存储两个堆栈
 ```
 #define MAXSIZE 50
    /*一个有界数组存储两个堆栈，如果数组有空间则执行入栈操作，（一个向右增长，一个向左增长）
