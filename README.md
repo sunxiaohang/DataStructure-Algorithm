@@ -351,4 +351,105 @@ int Pop(LinkedStack *stack){
         return result;
     }
 }
+/*中缀表达式如何转换为后缀表达式
+ * 从头到尾读取中缀表达式的每一个对象
+ * 1.运算数：直接输出
+ * 2.左括号：压入堆栈
+ * 3.右括号：将栈顶的运算符弹出并输出，直到遇到左括号（出栈不输出）
+ * 4.运算符：
+ *          若优先级大于栈顶运算符，则压栈
+ *          若优先级小于等于栈顶运算符，将栈顶运算符弹出兵书vhu，再比较新的栈顶运算符，直到改运算符大于栈顶运算符优先级为止，然后压栈
+ * 5.若个对象处理完毕，则把堆栈中存留的运算符一并输出
+ * 堆栈用途：
+ *      函数调用及递归实现
+ *      深度优先搜索
+ *      回溯算法
+ * */
+```
+#####队列（顺序存储）
+```
+#define MAXSIZE 50
+typedef struct {
+    int value[MAXSIZE];
+    int rear;
+    int front;
+}Queue;
+Queue *CreateQueue(){
+    Queue *queue;
+    queue=(Queue *)malloc(sizeof(Queue));
+    queue->front=0;
+    queue->rear=0;
+    return queue;
+}
+void AddQueue(Queue *queue,int value){
+    if((queue->rear+1)%MAXSIZE==queue->front){
+        printf("queue is full");
+        return;
+    }else {
+        queue->rear=(queue->rear+1)%MAXSIZE;
+        queue->value[queue->rear] = value;
+    }
+}
+int IsEmpty(Queue *queue){
+    if(queue->rear==queue->front)return 1;
+    else return 0;
+}
+void OutQueue(Queue* queue,int *value){
+    if(IsEmpty(queue)){
+        printf("Queue is empty");
+        return;
+    }else{
+        queue->front=(queue->front+1)%MAXSIZE;
+        *value=queue->value[queue->front];
+    }
+}
+```
+#####队列（链式存储）注意
+```
+typedef struct Node {
+    int value;
+    struct Node *next;
+} QNode;
+typedef struct {
+    QNode *rear;
+    QNode *front;
+} Queue;
+
+void InitQueue(Queue **queue) {
+    QNode *p;
+    p = (QNode *) malloc(sizeof(QNode));
+    p->next = NULL;
+    (*queue)->front = p;
+    (*queue)->rear = p;
+}
+
+void InQueue(Queue *queue, int value) {
+    QNode *InElement;
+    InElement = (QNode *) malloc(sizeof(QNode));
+    InElement->value = value;
+    InElement->next = NULL;
+    queue->rear->next = InElement;
+    queue->rear = InElement;
+}
+
+int IsEmpty(Queue *queue) {
+    if (queue->rear = queue->front)return 1;
+    else return 0;
+}
+
+void OutQueue(Queue *queue, int *value) {
+    QNode *OutElement;
+    if (IsEmpty(queue)) {
+        printf("queue is empty");
+        return;
+    } else {
+        OutElement = queue->front->next;
+        queue->front->next=OutElement->next;//指针头结点指向下一个结点(pspspspsps)
+        *value=OutElement->value;
+        free(OutElement);
+        if(IsEmpty(queue)){//出队列后如果队列为空则置为空队列（有必要么？）
+            queue->front=queue->rear;
+        }
+    }
+}
 ```
