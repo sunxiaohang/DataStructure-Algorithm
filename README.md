@@ -457,31 +457,149 @@ void OutQueue(Queue *queue, int *value) {
 }
 ```
 ##### 树
+判定树
+   每个结点需要查找的次数刚好为该结点所在的层数
+   查找成功时查找次数不会超过判定树的深度
+   n个结点的判定树的深度为[LgN]+1
+   平均查找长度ASL（Average Search Length）
+   ASL=sum(层数*个数)/各层总个数
+   n(n>=0)个结点构成的有限集合当n=0时称为空树
+   对于任何一棵非空树（n>0），它具备以下性质
+       树中会有一个root特殊结点用r表示
+       其余结点可分为m(m>0)个互不相交的有限集，其中每个集合本身又是一棵树，称为原来树的子树
+   树的特点：
+       子树是不相交的
+       出了根节点外，每隔结点有且仅有一个父结点
+       一棵N个结点的树有N-1条边（树是保证结点连通的最少边链接方式）
+   树的一些基本术语：
+       结点的度：结点的子树个数（满二叉树单个结点的度为2）
+       树的度：树的所有结点中最大的度数
+       叶结点：结点度为0的结点
+       父节点，子节点，兄弟结点
+   路径和路径长度；祖先节点：沿树根到某一结点路径上的所有节点都是这个结点的祖先结点
+   子孙结点通；
+   结点的层次：规定根结点在一层，其他层次随子节点+1
+   树的深度：树中结点的最大层次就是这棵树的深度
+ 
+   儿子兄弟表示法可以将所有的树转化为二叉树
+   特殊二叉树：
+       斜二叉树：只有左儿子或只有右结点
+       完美二叉树：满二叉树
+       完全二叉树：结点编号与满二叉树结点编号相同（编号不间断）
+   一个二叉树第i层的最大节点数为：2(i-1),i>=1
+   深度为k的二叉树有最大节点总数为2k-1,k>=1;
+   对于任何非空二叉树T，若N0表示叶子结点的个数，N2是度为2的非叶结点个数，那么两者满足关系：N0=N2+1;
+   (即叶子结点个数-1=度数为2的结点个数)
+ 
+   二叉树的抽象数据类型定义
+   数据对象集：一个有穷的结点集合
+       若不为空，则由根节点和其左、右二叉树组成
+   操作集：判断树是否为空，遍历，创建二叉树
+ 
+   常用的遍历方法有：
+       先序遍历（根左右），中序遍历（左根右），后序遍历（左右根），层次遍历（从上到下，从左到右）
+ 
+   在二叉树中，我们知道叶结点总数n0与有两个儿子的结点总数n2之间的关系是：n0=n2+1.
+   那么类似关系是否可以推广到m叉树中？也就是，如果在m叉树中，叶结点总数是n0，
+   有一个儿子的结点总数是n1，有2个儿子的结点总数是n2，有3个儿子的结点总数是n3，
+   ...。那么，ni之间存在什么关系？
+   完全二叉树，非根节点的父节点序号是[i/2]
+   结点的左孩子结点序号是2i，若2i<=n，否则没有左孩子结点
+   结点的右孩子结点序号是2i+1，（若2i+1<=n,否则没有右孩子）
+ 
 ```
-/*判定树
- *  每个结点需要查找的次数刚好为该结点所在的层数
- *  查找成功时查找次数不会超过判定树的深度
- *  n个结点的判定树的深度为[LgN]+1
- *  平均查找长度ASL（Average Search Length）
- *  ASL=sum(层数*个数)/各层总个数
- *  n(n>=0)个结点构成的有限集合当n=0时称为空树
- *  对于任何一棵非空树（n>0），它具备以下性质
- *      树中会有一个root特殊结点用r表示
- *      其余结点可分为m(m>0)个互不相交的有限集，其中每个集合本身又是一棵树，称为原来树的子树
- *  树的特点：
- *      子树是不相交的
- *      出了根节点外，每隔结点有且仅有一个父结点
- *      一棵N个结点的树有N-1条边（树是保证结点连通的最少边链接方式）
- *  树的一些基本术语：
- *      结点的度：结点的子树个数（满二叉树单个结点的度为2）
- *      树的度：树的所有结点中最大的度数
- *      叶结点：结点度为0的结点
- *      父节点，子节点，兄弟结点
- *  路径和路径长度；祖先节点：沿树根到某一结点路径上的所有节点都是这个结点的祖先结点
- *  子孙结点通；
- *  结点的层次：规定根结点在一层，其他层次随子节点+1
- *  树的深度：树中结点的最大层次就是这棵树的深度
- *
- *  儿子兄弟表示法可以将所有的树转化为二叉树
- * */
+ typedef struct BT{
+     int value;
+     struct BT *leftchild;
+     struct BT *rightchild;
+ }BinTree;
+ //二叉树的每个结点遍历都会遇到三次，第一次遇到就打印的为先序遍历，第二次遇到就打印的为中序遍历，第三次遇到就打印的为后序遍历
+ //先序遍历(递归遍历)
+ void PreOrderTraversal(BinTree *BT){
+     if(BT){
+     if(!BT->leftchild&&!BT->rightchild)
+         printf("%d\n",BT->value);
+         PreOrderTraversal(BT->leftchild);
+         PreOrderTraversal(BT->rightchild);
+     }
+ }
+ //中序遍历(递归遍历)
+ void InOrderTraversal(BinTree *BT){
+     if(BT){
+     if(!BT->leftchild&&!BT->rightchild)
+         InOrderTraversal(BT->leftchild);
+         printf("%d\n",BT->value);
+         InOrderTraversal(BT->rightchild);
+     }
+ }
+ //后序遍历(递归遍历)
+ void PostOrderTraversal(BinTree *BT){
+     if(BT){
+     if(!BT->leftchild&&!BT->rightchild)
+         PostOrderTraversal(BT->leftchild);
+         PostOrderTraversal(BT->rightchild);
+         printf("%d\n",BT->value);
+     }
+ }
+ //二叉树遍历的本质是将二维序列转换为一维序列
+ //使用队列进行二叉树的层级访问（遍历根节点，将左右儿子节点入队列）
+ void LevelOrderTraversal(BinTree BT){
+     Queue *queue;
+     BinTree *T;
+     queue=CreateQueue();
+     AddQueue(queue,BT);
+     while(!IsEmptyQueue(queue)){
+         T=DeleteQueue(queue);
+         printf("%d\n",T->value);
+         if(T->leftchild)AddQueue(queue,T->leftchild);
+         if(T->rightchild)AddQueue(queue,T->rightchild);
+     }
+ }
+ //给定前中序遍历结果或中后序遍历结果可以唯一确定一棵二叉树，给定前后序遍历结果不能唯一确定二叉树
+ //非递归实现（中序遍历）
+ void InOrderTraversal(BinTree *BT){
+     BinTree *T=BT;
+     LinkedStack *stack=CreateLinkedStack();//创建并初始化堆栈
+     while(T||!isEmpty(stack)){
+         while(T){//一直向左将沿途结点压入堆栈
+             Push(stack,T);
+             T=T->leftchild;//转向左子树
+         }
+         if(!isEmpty(stack)){
+             T=Pop(stack);//结点弹出堆栈
+             printf("%5d",T->value);//打印结点
+             T=T->rightchild;//转向右子树
+         }
+     }
+ }
+ //非递归实现（先序遍历）
+ void PreOrderTraversal(BinTree *BT){
+     BinTree *T=BT;
+     LinkedStack *stack=CreateLinkedStack();//创建并初始化堆栈
+     while(T||!isEmpty(stack)){
+         while(T){//一直向左将沿途结点压入堆栈
+             printf("%5d",T->value);//打印结点
+             Push(stack,T);
+             T=T->leftchild;//转向左子树
+         }
+         if(!isEmpty(stack)){
+             T=Pop(stack);//结点弹出堆栈
+             T=T->rightchild;//转向右子树
+         }
+     }
+ }
+```
+##### 二叉搜索树：BST(binary search tree)
+  也称二叉排序树或二叉查找树
+  二叉搜索树条件
+       1.非空左子树的所有键值小于其根节点的键值
+       2.非空右子树的所有键值大于其根节点的键值
+       3.左，右子树都是二叉搜索树
+```
+int Find(BinTree *binTree,int result){
+    if(!binTree)return NULL;
+    if(result>binTree->value)return Find(binTree->rightchild,result);
+    else if(result<binTree->value)return Find(binTree,result);
+    else return binTree;//查找成功，返回结点地址
+}
 ```
