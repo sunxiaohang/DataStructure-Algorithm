@@ -354,21 +354,21 @@ int Pop(LinkedStack *stack){
         return result;
     }
 }
-/*中缀表达式如何转换为后缀表达式
- * 从头到尾读取中缀表达式的每一个对象
- * 1.运算数：直接输出
- * 2.左括号：压入堆栈
- * 3.右括号：将栈顶的运算符弹出并输出，直到遇到左括号（出栈不输出）
- * 4.运算符：
- *          若优先级大于栈顶运算符，则压栈
- *          若优先级小于等于栈顶运算符，将栈顶运算符弹出兵书vhu，再比较新的栈顶运算符，直到改运算符大于栈顶运算符优先级为止，然后压栈
- * 5.若个对象处理完毕，则把堆栈中存留的运算符一并输出
- * 堆栈用途：
- *      函数调用及递归实现
- *      深度优先搜索
- *      回溯算法
- * */
 ```
+#####中缀表达式如何转换为后缀表达式
+  从头到尾读取中缀表达式的每一个对象
+  1.运算数：直接输出
+  2.左括号：压入堆栈
+  3.右括号：将栈顶的运算符弹出并输出，直到遇到左括号（出栈不输出）
+  4.运算符：
+           若优先级大于栈顶运算符，则压栈
+           若优先级小于等于栈顶运算符，将栈顶运算符弹出兵书vhu，再比较新的栈顶运算符，直到改运算符大于栈顶运算符优先级为止，然后压栈
+  5.若个对象处理完毕，则把堆栈中存留的运算符一并输出
+  堆栈用途：
+       函数调用及递归实现
+       深度优先搜索
+       回溯算法
+
 ##### 队列（顺序存储）
 ```
 #define MAXSIZE 50
@@ -590,16 +590,205 @@ void OutQueue(Queue *queue, int *value) {
  }
 ```
 ##### 二叉搜索树：BST(binary search tree)
-  也称二叉排序树或二叉查找树
+  也称二叉排序树或二叉查找树 
   二叉搜索树条件
        1.非空左子树的所有键值小于其根节点的键值
        2.非空右子树的所有键值大于其根节点的键值
        3.左，右子树都是二叉搜索树
 ```
-int Find(BinTree *binTree,int result){
+//递归方式实现
+Position Find(BinTree *binTree,int result){
     if(!binTree)return NULL;
     if(result>binTree->value)return Find(binTree->rightchild,result);
     else if(result<binTree->value)return Find(binTree,result);
-    else return binTree;//查找成功，返回结点地址
+    else return binTree;//查找成功，返回结点地址(return尾递归)
 }
+//非递归方式实现
+Position IterFind(BinTree *binTree,int value){
+    while(binTree){
+        if(result>binTree->value)
+            binTree=binTree->rightchild;
+        else if(result<binTree->value)
+            binTree=binTree->leftchild;
+        else 
+            return binTree;
+    }
+    return NULL;
+}
+//寻找最小值
+Position FindMin(BinTree *binTree){
+    if(!binTree)return NULL;
+    else if(!binTree->leftchild)
+        return binTree;
+    else
+        return FindMin(binTree->leftchild);
+}
+//寻找最大值
+Position FindMax(BinTree *binTree){
+    if(binTree){
+        while(binTree->rightchild)
+            binTree=binTree->rightchild;
+    }
+    return binTree;
+}
+//结点插入
+BinTree * Insert(BinTree *binTree, int value) {
+    if(!binTree){
+        binTree=malloc(sizeof(BinTree));
+        binTree->value=value;
+        binTree->leftchild=binTree->rightchild=NULL;
+    }else{
+        if(value<binTree->value)
+            binTree->leftchild=Insert(binTree->leftchild,value);
+        else if(value>binTree->value)
+            binTree->rightchild=Insert(binTree->rightchild,value);
+    }
+    return binTree;
+}
+//删除结点
+BinTree *Delete(BinTree *binTree,int value){
+    (Position)BinTree *Temp;
+    if(!binTree)printf("要删除的元素未找到");
+        //左子树递归删除
+    else if(value<binTree->value)binTree->leftchild=Delete(binTree,value);
+        //右子树递归删除
+    else if(value>binTree->value)binTree->rightchild=Delete(binTree->rightchild,value);
+    else //找到要删除的结点
+        if(binTree->leftchild&&binTree->rightchild){//被删除结点有左右量子子节点
+            Temp=FindMin(binTree->rightchild);//在右子树中招最小的元素填充删除结点
+            binTree->value=Temp->value;
+            binTree->rightchild=Delete(binTree->rightchild,binTree->value);
+        }else{//被删除的结点有一个或无子结点
+            Temp=binTree;
+            if(!binTree->leftchild)binTree=binTree->rightchild;
+            else if(!binTree->rightchild)binTree=binTree->leftchild;
+            free(Temp);
+        }
+    return binTree;
+}
+```
+
+##### 平衡二叉树(Balanced Binary Tree)(AVL树)(AVL是提出平衡树的学者名字首字母)
+
+空树或任一结点左右子树高度差不超不过1|BF(T)|<=1
+
+平衡因子(Balance Factor 简称BF：BF(T)=Hl-Hr)
+
+其中hl和hr分别为T的左右子树高度
+
+高度=层数-1
+
+完全二叉树高度为log2N(平衡二叉树)
+
+Nh是高度为h的平衡二叉树的最小结点树
+
+Nh=F(h+2)-1
+
+ 
+```
+ #define MaxData 10000
+ typedef struct HeapStruct{
+     int *value;//存储对元素的数组
+     int length;//堆的当前元素个数
+     int capacity;//堆的最大容量
+ }Heap;
+```
+##### 优先队列（PriorityQueue）
+   取出元素的先后顺序是按照元素的优先权（关键字）大小，而不是元素进入队列的先后顺序
+  
+   最大堆和最小堆都必须满足完全二叉树（切根节点最大或最小）
+   最大堆的建立
+        建立最大堆：将已经存在的N个元素按最大堆的要求存放在要给一维数组中
+        方法一：通过插入操作，将N个元素一个个相继插入到一个初始为空的堆中去，其时间代价最大为O（NlogN）
+        方法二：在线性时间复杂度下建立最大堆
+            (1)将N个元素按输入顺序存入，先满足完全二叉树的结构特性
+            (2)调整各结点位置以满足最大堆的有序特性
+   建堆时，最坏的情况下需要挪动的元素次数等于树中各节点的高度和
+  
+   对由同样n个整数构成的二叉搜索树（查找树）和最小堆：有以下结论
+        二叉搜索树高度大于等于最小堆高度
+        对该二叉搜索树进行中序遍历可得到从小到大的序列
+        从最小堆根节点到起任何叶结点的路径上的结点值构成从小到大的序列
+
+  ```
+ Heap * Create(int MaxSize){
+     Heap *heap=malloc(sizeof(Heap));
+     heap->value=malloc((MaxSize+1)*sizeof(int));
+     heap->length=0;
+     heap->capacity=MaxSize;
+     heap->value[0]=MaxData;//定义哨兵，便于操作
+     return heap;
+ }
+ void Insert(Heap *heap,int value){
+     int i;
+     if(IsFull(heap)){
+         printf("最大堆已经满了");
+         return;
+     }
+     i=++heap->length;
+     for(;heap->value[i/2]<value;i/=2)
+         heap->value[i]=heap->value[i/2];
+     heap->value[i]=value;
+ }
+ int DeleteMax(Heap *heap){
+     int parent,child;
+     int maxValue,temp;
+     if(IsEmpty(heap)){
+         printf("最大堆已空");
+         return 0;
+     }
+     maxValue=heap->value[1];
+     //用最大堆中最后一个元素从根节点开始过滤下层结点
+     temp=heap->value[heap->length--];
+     for(parent=1;parent*2<=heap->length;parent=child){
+         child=parent*2;
+         //左儿子和右儿子节点比较取较大者
+         if((child!=heap->length)&&(heap->value[child]<heap->value[child+1]))
+             child++;
+         if(temp>=heap->value[child])break;
+         else
+             heap->value[parent]=heap->value[child];
+     }
+     heap->value[parent]=temp;
+     return maxValue;
+ }
+ int IsEmpty(Heap *heap){
+     return heap->length==0;
+ }
+ int IsFull(Heap *heap){
+     return heap->length==heap->capacity;
+ }
+ 
+ typedef struct TreeNode{
+     int weight;
+     struct TreeNode *left,*right;
+ }HuffmanTree;
+ ```
+##### 哈夫曼树（HuffmanTree）
+查找效率，查找次数乘查找概率
+带权路径长度（WPL）：设二叉树有n个叶子结点，每隔叶子结点带有权值Wk，从根节点到每隔叶子结点的长度是Lk，则每隔叶子结点的带全路径长度之和WPL=（nEk=1）WkLk
+   最优二叉树或哈夫曼树：WPL最小的二叉树
+   哈夫曼树的特点
+        没有度为1的结点
+        n个叶子结点的HuffmanTree有2n-1个结点
+        HuffmanTree的任意非叶结点的左右子树交换后仍是HuffmanTree
+   对于一组权值，可能有不同构的两棵HuffmanTree
+ ```
+ HuffmanTree *Huffman(Heap *heap){
+     //假设heap->length权值已经存在heap->value[]->weight里面
+     int i;HuffmanTree *huffmanTree;
+     BuildHeap(heap);//将heap->value[]按权值调整为最小堆
+     for(i=1;i<heap->length;i++){
+         huffmanTree=malloc(sizeof(HuffmanTree));//建立新结点
+         huffmanTree->left=DeleteMin(heap);//从最小堆中删除一个结点，作为新huffmanTree的左子结点
+         huffmanTree->right=DeleteMin(heap);//从最小堆中删除一个结点，作为新huffmanTree的右子结点
+         huffmanTree->weight=huffmanTree->weight+huffmanTree->right->weight;//计算新// 权值
+         Insert(heap,huffmanTree);
+     }
+     huffmanTree=DeleteMin(heap);
+     return huffmanTree;
+ }
+ /*二叉树用于编码
+  * 当被编码字母全部在二叉树的叶子结点的时候（即，编码字母不会出现在有子节点的结点中）便可以保证字符编码没有二义性
+  * */
 ```
